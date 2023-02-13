@@ -6,7 +6,6 @@ const cors = require('cors')
 
 app.use(express.json())
 app.use(cors())
-app.use(requestLogger)
 
 let notes = [
     {
@@ -33,6 +32,8 @@ let notes = [
     console.log('---')
     next()
   }
+
+  app.use(requestLogger)
 
 
 app.get('/', (request, response) => {
