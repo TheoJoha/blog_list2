@@ -69,8 +69,8 @@ app.use(requestLogger)
 }) */
 
 app.get('/api/blogs', (request, response) => {
-  Blog.find({}).then(notes => {
-    response.json(notes)
+  Blog.find({}).then(blogs => {
+    response.json(blogs)
   })
 })
 
@@ -110,7 +110,7 @@ app.get('/api/blogs', (request, response) => {
     .catch(error => next(error))
 }) */
 
-app.post('/api/blogs', (request, response) => {
+app.post('/api/blogs', (request, response, next) => {
   const body = request.body
 
   const blog = new Blog({
