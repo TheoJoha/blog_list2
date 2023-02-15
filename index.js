@@ -69,11 +69,9 @@ app.use(requestLogger)
 }) */
 
 app.get('/api/blogs', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
+  Blog.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 /* app.get('/api/notes/:id', (request, response, next) => {
@@ -113,13 +111,20 @@ app.get('/api/blogs', (request, response) => {
 }) */
 
 app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body)
+  const body = request.body
 
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+  })
+
+  blog.save()
+    .then(savedBlog => {
+      response.json(savedBlog)
     })
+    .catch(error => next(error))
 })
 
 /* app.put('/api/notes/:id', (request, response, next) => {
