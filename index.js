@@ -1,3 +1,4 @@
+/* // const config = require('./utils/config')
 require('dotenv').config()
 const express = require('express')
 const app = express()
@@ -5,11 +6,12 @@ const app = express()
 const Blog = require('./models/blog')
 
 const cors = require('cors')
+const logger = require('./utils/logger')
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-
+ */
 /* let notes = [
   {
     id: 1,
@@ -28,7 +30,7 @@ app.use(cors())
   }
 ] */
 
-const requestLogger = (request, response, next) => {
+/* const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
   console.log('Body:  ', request.body)
@@ -36,7 +38,7 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-app.use(requestLogger)
+app.use(requestLogger) */
 
 
 // mongoose definitions
@@ -68,11 +70,11 @@ app.use(requestLogger)
   })
 }) */
 
-app.get('/api/blogs', (request, response) => {
+/* app.get('/api/blogs', (request, response) => {
   Blog.find({}).then(blogs => {
     response.json(blogs)
   })
-})
+}) */
 
 /* app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id)
@@ -110,7 +112,7 @@ app.get('/api/blogs', (request, response) => {
     .catch(error => next(error))
 }) */
 
-app.post('/api/blogs', (request, response, next) => {
+/* app.post('/api/blogs', (request, response, next) => {
   const body = request.body
 
   const blog = new Blog({
@@ -125,7 +127,7 @@ app.post('/api/blogs', (request, response, next) => {
       response.json(savedBlog)
     })
     .catch(error => next(error))
-})
+}) */
 
 /* app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
@@ -141,14 +143,14 @@ app.post('/api/blogs', (request, response, next) => {
     .catch(error => next(error))
 }) */
 
-const unknownEndpoint = (request, response) => {
+/* const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
-}
+} */
 
 // handler of requests with unknown endpoint
-app.use(unknownEndpoint)
+// app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
+/* const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
@@ -158,13 +160,20 @@ const errorHandler = (error, request, response, next) => {
   }
 
   next(error)
-}
+} */
 
 // this has to be the last loaded middleware.
-app.use(errorHandler)
+/* app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
-})
+}) */
 
+const app = require('./app')
+const config = require('./utils/config')
+const logger = require('./utils/logger')
+
+app.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`)
+})

@@ -13,12 +13,14 @@ const url =
 mongoose.set('strictQuery',false)
 mongoose.connect(url)
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
+const blogSchema = new mongoose.Schema({
+  title: String,
+  author: String,
+  url: String,
+  likes: Number,
 })
 
-noteSchema.set('toJSON', {
+blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
@@ -26,7 +28,7 @@ noteSchema.set('toJSON', {
   }
 })
 
-const Note = mongoose.model('Note', noteSchema)
+const Blog = mongoose.model('Blog', blogSchema)
 
 // definition of new note / code for generating a new note
 /* const note = new Note({
@@ -38,9 +40,9 @@ const Note = mongoose.model('Note', noteSchema)
   mongoose.connection.close()
 }) */
 
-Note.find({}).then(result => {
-  result.forEach(note => {
-    console.log(note)
+Blog.find({}).then(result => {
+  result.forEach(blog => {
+    console.log(blog)
   })
   mongoose.connection.close()
 })
