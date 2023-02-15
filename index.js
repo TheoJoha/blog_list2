@@ -1,8 +1,8 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const Note = require('./models/note')
-
+// const Note = require('./models/note')
+const Blog = require('./models/blog')
 
 const cors = require('cors')
 
@@ -58,17 +58,25 @@ app.use(requestLogger)
  */
 
 
-app.get('/', (request, response) => {
+/* app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
-})
+}) */
 
-app.get('/api/notes', (request, response) => {
+/* app.get('/api/notes', (request, response) => {
   Note.find({}).then(notes => {
     response.json(notes)
   })
+}) */
+
+app.get('/api/blogs', (request, response) => {
+  Blog
+    .find({})
+    .then(blogs => {
+      response.json(blogs)
+    })
 })
 
-app.get('/api/notes/:id', (request, response, next) => {
+/* app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id)
     .then(note => {
       if (note) {
@@ -78,17 +86,17 @@ app.get('/api/notes/:id', (request, response, next) => {
       }
     })
     .catch(error => next(error))
-})
+}) */
 
-app.delete('/api/notes/:id', (request, response, next) => {
+/* app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
     })
     .catch(error => next(error))
-})
+}) */
 
-app.post('/api/notes', (request, response, next) => {
+/* app.post('/api/notes', (request, response, next) => {
   const body = request.body
 
   const note = new Note({
@@ -102,9 +110,19 @@ app.post('/api/notes', (request, response, next) => {
       response.json(savedNote)
     })
     .catch(error => next(error))
+}) */
+
+app.post('/api/blogs', (request, response) => {
+  const blog = new Blog(request.body)
+
+  blog
+    .save()
+    .then(result => {
+      response.status(201).json(result)
+    })
 })
 
-app.put('/api/notes/:id', (request, response, next) => {
+/* app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
 
   Note.findByIdAndUpdate(
@@ -116,7 +134,7 @@ app.put('/api/notes/:id', (request, response, next) => {
       response.json(updatedNote)
     })
     .catch(error => next(error))
-})
+}) */
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
