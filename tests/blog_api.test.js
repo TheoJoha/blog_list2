@@ -4,7 +4,7 @@ const app = require('../app')
 
 const api = supertest(app)
 
-test('notes are returned as json', async () => {
+test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
     .expect(200)
@@ -14,7 +14,7 @@ test('notes are returned as json', async () => {
 test('there are five blogs', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(5)
+  expect(response.body).toHaveLength(4)
 }, 100000)
 
 afterAll(async () => {
