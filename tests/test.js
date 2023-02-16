@@ -78,12 +78,12 @@ describe('total likes', () => {
   })
 
   test('when list has zero blogs, equals zero likes', () => {
-    const result = listHelper.totalLikes(listWithMoreThanOneBlogs)
+    const result = listHelper.totalLikes(listWithZeroBlogs)
     expect(result).toBe(0)
   })
 
   test('when list has more than one blogs, equals the likes of those blogs', () => {
-    const result = listHelper.totalLikes(listWithZeroBlogs)
+    const result = listHelper.totalLikes(listWithMoreThanOneBlogs)
     expect(result).toBe(41)
   })
 })
