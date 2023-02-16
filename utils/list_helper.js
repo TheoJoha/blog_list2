@@ -34,7 +34,7 @@ const mostBlogs = (blogs) => {
       blogsPerAuthor[blogs[i].author] += 1
     }
     else {
-      blogsPerAuthor[blogs[i].author] += 1
+      blogsPerAuthor[blogs[i].author] = 1
     }
   }
 
