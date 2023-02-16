@@ -98,6 +98,13 @@ describe('favourite function', () => {
   })
 })
 
+describe('author with most blogs', () => {
 
+  const result = listHelper.mostBlogs(listWithMoreThanOneBlogs)
+  expect(result).toEqual({
+    author: 'Robert C. Martin',
+    blogs: 3
+  })
+})
 
 
