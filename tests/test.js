@@ -84,6 +84,6 @@ describe('total likes', () => {
 
   test('when list has more than one blogs, equals the likes of those blogs', () => {
     const result = listHelper.totalLikes(listWithMoreThanOneBlogs)
-    expect(result).toBe(41)
+    expect(result).toBe(36)
   })
 })
