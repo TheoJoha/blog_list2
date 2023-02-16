@@ -100,18 +100,24 @@ describe('favourite function', () => {
 
 describe('author with most blogs', () => {
 
-  const result = listHelper.mostBlogs(listWithMoreThanOneBlogs)
-  expect(result).toEqual({
-    'author': 'Robert C. Martin',
-    'blogs': 3
+  test('check which author has the most blogs', () => {
+    const result = listHelper.mostBlogs(listWithMoreThanOneBlogs)
+    expect(result).toEqual({
+      'author': 'Robert C. Martin',
+      'blogs': 3
+    })
   })
+
 })
 
 describe('author with most likes', () => {
 
-  const result = listHelper.mostLikes(listWithMoreThanOneBlogs)
-  expect(result).toEqual({
-    'author': 'Edsger W. Dijkstra',
-    'likes': 17
+  test('check which author has the most likes', () => {
+    const result = listHelper.mostLikes(listWithMoreThanOneBlogs)
+    expect(result).toEqual({
+      'author': 'Edsger W. Dijkstra',
+      'likes': 17
+    })
   })
+
 })
