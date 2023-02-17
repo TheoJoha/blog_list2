@@ -14,8 +14,14 @@ test('blogs are returned as json', async () => {
 test('there are five blogs', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(4)
+  expect(response.body).toHaveLength(5)
 }, 100000)
+
+test('id is defined', async () => {
+  const response = await api.get('/api/blogs')
+
+  expect(response[0].id).toBeDefined()
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
