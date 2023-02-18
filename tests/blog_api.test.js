@@ -4,6 +4,8 @@ const app = require('../app')
 
 const api = supertest(app)
 
+var lengthOfBlogs = 5
+
 test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
@@ -14,13 +16,82 @@ test('blogs are returned as json', async () => {
 test('there are five blogs', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(5)
+  expect(response.body).toHaveLength(lengthOfBlogs)
 }, 100000)
 
 test('id is defined', async () => {
   const response = await api.get('/api/blogs')
 
   expect(response.body[0].id).toBeDefined()
+})
+
+test('HTTP POST request successfully creates a new blog post', async () => {
+
+  const newBlog = {
+    title: 'aaa',
+    author: 'bbb',
+    url: '...',
+    likes: 1234
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const titles = response.body.map(r => r.title)
+
+  expect(response.body).toHaveLength(lengthOfBlogs + 1)
+  expect(titles).toContain(
+    'aaa'
+  )
+})
+
+test('HTTP POST request without likes propoerty defaults to zero', async () => {
+
+  const newBlog = {
+    title: 'aaa',
+    author: 'bbb',
+    url: '...'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+  const response = await api.get('/api/blogs')
+
+  expect(response.body[-1].likes).toBe(0)
+
+})
+
+test('verifiy that if the title or url properties are missing', async () => {
+
+  const newBlogNoTitle = {
+    author: 'bbb',
+    url: '...',
+    likes: 99
+  }
+
+  const newBlogNoAuthor = {
+    title: 'aaa',
+    url: '...',
+    likes: 99
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogNoTitle)
+    .expect(400)
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogNoAuthor)
+    .expect(400)
+
 })
 
 afterAll(async () => {
