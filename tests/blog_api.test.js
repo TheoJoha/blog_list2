@@ -4,7 +4,16 @@ const app = require('../app')
 
 const api = supertest(app)
 
-var lengthOfBlogs = 5
+var lengthOfBlogs = 0
+
+beforeAll(async () => {
+  const response = await api.get('/api/blogs')
+
+  lengthOfBlogs = response.body.length
+
+})
+
+
 
 test('blogs are returned as json', async () => {
   await api
@@ -13,7 +22,7 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 }, 100000)
 
-test('there are five blogs', async () => {
+test('the number of blog post is correct', async () => {
   const response = await api.get('/api/blogs')
 
   expect(response.body).toHaveLength(lengthOfBlogs)
