@@ -46,7 +46,11 @@ test.only('HTTP POST request successfully creates a new blog post', async () => 
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201 || 200)
+    .expect(function(res) {
+      if (res.statusCode !== 200 && res.statusCode !== 201) {
+        throw Error('unexpected status code: ' + res.statusCode)
+      }
+    })
     .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
@@ -70,7 +74,11 @@ test.only('HTTP POST request without likes property defaults to zero', async () 
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201 || 200)
+    .expect(function(res) {
+      if (res.statusCode !== 200 && res.statusCode !== 201) {
+        throw Error('unexpected status code: ' + res.statusCode)
+      }
+    })
   const response = await api.get('/api/blogs')
 
   expect(response.body[-1].likes).toBe(0)
