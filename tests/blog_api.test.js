@@ -53,16 +53,16 @@ test('HTTP POST request successfully creates a new blog post', async () => {
 
   const titles = response.body.map(r => r.title)
 
-  expect(response.body).toHaveLength(lengthOfBlogs + 1)
+  expect(response.body.length).toBe(lengthOfBlogs + 1)
   expect(titles).toContain(
     'aaa'
   )
 })
 
-test('HTTP POST request without likes propoerty defaults to zero', async () => {
+test('HTTP POST request without likes property defaults to zero', async () => {
 
   const newBlog = {
-    title: 'aaa',
+    title: 'ccc',
     author: 'bbb',
     url: '...'
   }
@@ -77,7 +77,7 @@ test('HTTP POST request without likes propoerty defaults to zero', async () => {
 
 })
 
-test('verifiy that if the title or url properties are missing', async () => {
+test('if the title or url properties are missing then 400-error', async () => {
 
   const newBlogNoTitle = {
     author: 'bbb',
