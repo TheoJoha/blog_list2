@@ -34,13 +34,13 @@ test('id is defined', async () => {
   expect(response.body[0].id).toBeDefined()
 })
 
-test('HTTP POST request successfully creates a new blog post', async () => {
+test.only('HTTP POST request successfully creates a new blog post', async () => {
 
   const newBlog = {
     title: 'aaa',
     author: 'bbb',
     url: '...',
-    likes: 1234
+    likes: 1234,
   }
 
   await api
@@ -53,16 +53,16 @@ test('HTTP POST request successfully creates a new blog post', async () => {
 
   const titles = response.body.map(r => r.title)
 
-  expect(response.body.length).toBe(lengthOfBlogs + 1)
+  expect(response.body).toHaveLength(lengthOfBlogs + 1)
   expect(titles).toContain(
     'aaa'
   )
 })
 
-test('HTTP POST request without likes property defaults to zero', async () => {
+test.only('HTTP POST request without likes property defaults to zero', async () => {
 
   const newBlog = {
-    title: 'ccc',
+    title: 'xxx',
     author: 'bbb',
     url: '...'
   }
