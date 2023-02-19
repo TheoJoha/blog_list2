@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const Blog = require('../models/blog')
 
 const api = supertest(app)
 
@@ -37,7 +38,7 @@ test('id is defined', async () => {
 test.only('HTTP POST request successfully creates a new blog post', async () => {
 
   const newBlog = {
-    title: 'aaa',
+    title: 'yyy',
     author: 'bbb',
     url: '...',
     likes: 1234,
@@ -59,7 +60,7 @@ test.only('HTTP POST request successfully creates a new blog post', async () => 
 
   expect(response.body).toHaveLength(lengthOfBlogs + 1)
   expect(titles).toContain(
-    'aaa'
+    'yyy'
   )
 })
 
@@ -79,9 +80,10 @@ test.only('HTTP POST request without likes property defaults to zero', async () 
         throw Error('unexpected status code: ' + res.statusCode)
       }
     })
-  const response = await api.get('/api/blogs')
 
-  expect(response.body[-1].likes).toBe(0)
+  const mostRecentBlog = await Blog.find().sort({ $natural:-1 }).limit(1)
+
+  expect(mostRecentBlog.likes).toBe(0)
 
 })
 
