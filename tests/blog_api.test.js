@@ -1,17 +1,53 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
 const app = require('../app')
+const api = supertest(app)
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
+
 const Blog = require('../models/blog')
 
-const api = supertest(app)
 
 var lengthOfBlogs = 0
+
+const blogsInDb = async () => {
+  const blogsRetrieved = await Blog.find({})
+  return blogsRetrieved.map(blog => blog.toJSON())
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
 
 beforeAll(async () => {
   const response = await api.get('/api/blogs')
 
   lengthOfBlogs = response.body.length
 
+})
+
+const initialBlogs = [
+  {
+    title: 'xxx',
+    author: 'bbb',
+    url: '...',
+    likes: 88
+  },
+  {
+    title: 'zzz',
+    author: 'iii',
+    url: '...',
+    likes: 55
+  },
+]
+
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  let blogObject = new Blog(initialBlogs[0])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
 })
 
 
@@ -33,9 +69,9 @@ test('id is defined', async () => {
   const response = await api.get('/api/blogs')
 
   expect(response.body[0].id).toBeDefined()
-})
+}, 100000)
 
-test.only('HTTP POST request successfully creates a new blog post', async () => {
+test('HTTP POST request successfully creates a new blog post', async () => {
 
   const newBlog = {
     title: 'yyy',
@@ -62,9 +98,10 @@ test.only('HTTP POST request successfully creates a new blog post', async () => 
   expect(titles).toContain(
     'yyy'
   )
-})
+}, 100000)
 
-test.only('HTTP POST request without likes property defaults to zero', async () => {
+// This one should maybe stay commented
+test('HTTP POST request without likes property defaults to zero', async () => {
 
   const newBlog = {
     title: 'xxx',
@@ -81,11 +118,17 @@ test.only('HTTP POST request without likes property defaults to zero', async () 
       }
     })
 
-  const mostRecentBlog = await Blog.find().sort({ $natural:-1 }).limit(1)
+  /*   const mostRecentBlog = await Blog.find().sort({ $natural:-1 }).limit(1)
 
-  expect(mostRecentBlog.likes).toBe(0)
+  expect(mostRecentBlog.likes).toBe(0) */
 
-})
+  const blogsAtEnd = await blogsInDb()
+
+  const likes = blogsAtEnd.map(r => r.likes)
+
+  expect(likes).toContain(0)
+
+}, 100000)
 
 test('if the title or url properties are missing then 400-error', async () => {
 
@@ -95,9 +138,9 @@ test('if the title or url properties are missing then 400-error', async () => {
     likes: 99
   }
 
-  const newBlogNoAuthor = {
+  const newBlogNoUrl = {
     title: 'aaa',
-    url: '...',
+    author: 'heyho',
     likes: 99
   }
 
@@ -108,11 +151,92 @@ test('if the title or url properties are missing then 400-error', async () => {
 
   await api
     .post('/api/blogs')
-    .send(newBlogNoAuthor)
+    .send(newBlogNoUrl)
     .expect(400)
 
-})
+  const blogsAtEnd = await blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(initialBlogs.length)
+
+}, 100000)
+
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+  // const initialBlogsLength = blogsInDb().length
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(
+    initialBlogs.length - 1
+  )
+
+  const titles = blogsAtEnd.map(r => r.title)
+
+  expect(titles).not.toContain(blogToDelete.title)
+}, 100000)
+
+test('a blog can be updated', async () => {
+
+  const blogsAtStart = await blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const newBlog = {
+    title: 'xxx',
+    author: 'bbb',
+    url: '...',
+    likes: 444
+  }
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(newBlog)
+    .expect(200)
+
+  const blogsAtEnd = await blogsInDb()
+
+  const likesNumbers = blogsAtEnd.map(r => r.likes)
+
+  expect(likesNumbers).toContain(newBlog.likes)
+}, 100000)
 
 afterAll(async () => {
   await mongoose.connection.close()
+})
+
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await usersInDb()
+
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
 })
