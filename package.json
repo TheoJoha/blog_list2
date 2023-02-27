@@ -20,10 +20,15 @@
   },
   "homepage": "https://github.com/TheoJoha/blog_list2#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^6.9.1"
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.9.1",
+    "mongoose-unique-validator": "^3.1.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
@@ -35,5 +40,6 @@
   "jest": {
     "testEnvironment": "node",
     "globalTeardown": "./tests/teardown.js"
-  }
+  },
+  "proxy": "http://localhost:3003/"
 }
