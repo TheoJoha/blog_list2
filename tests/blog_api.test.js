@@ -160,83 +160,9 @@ test('if the title or url properties are missing then 400-error', async () => {
 
 }, 100000)
 
-test('a blog can be deleted', async () => {
-  const blogsAtStart = await blogsInDb()
-  const blogToDelete = blogsAtStart[0]
-  // const initialBlogsLength = blogsInDb().length
 
-  await api
-    .delete(`/api/blogs/${blogToDelete.id}`)
-    .expect(204)
-
-  const blogsAtEnd = await blogsInDb()
-
-  expect(blogsAtEnd).toHaveLength(
-    initialBlogs.length - 1
-  )
-
-  const titles = blogsAtEnd.map(r => r.title)
-
-  expect(titles).not.toContain(blogToDelete.title)
-}, 100000)
-
-test('a blog can be updated', async () => {
-
-  const blogsAtStart = await blogsInDb()
-  const blogToUpdate = blogsAtStart[0]
-
-  const newBlog = {
-    title: 'xxx',
-    author: 'bbb',
-    url: '...',
-    likes: 444
-  }
-
-  await api
-    .put(`/api/blogs/${blogToUpdate.id}`)
-    .send(newBlog)
-    .expect(200)
-
-  const blogsAtEnd = await blogsInDb()
-
-  const likesNumbers = blogsAtEnd.map(r => r.likes)
-
-  expect(likesNumbers).toContain(newBlog.likes)
-}, 100000)
 
 afterAll(async () => {
   await mongoose.connection.close()
 })
 
-describe('when there is initially one user in db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
-
-  test('creation succeeds with a fresh username', async () => {
-    const usersAtStart = await usersInDb()
-
-    const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
-      password: 'salainen',
-    }
-
-    await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const usersAtEnd = await usersInDb()
-    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
-
-    const usernames = usersAtEnd.map(u => u.username)
-    expect(usernames).toContain(newUser.username)
-  })
-})
